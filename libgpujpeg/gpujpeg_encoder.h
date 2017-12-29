@@ -109,6 +109,15 @@ GPUJPEG_API int
 gpujpeg_encoder_input_copy_image(struct gpujpeg_encoder_input* input, struct gpujpeg_encoder* encoder, uint8_t* image);
 
 /**
+ * Get device image from encoder
+ *
+ * @param encoder        Encoder structure to which internal buffer will be the image copied
+ * @retval  coder inner device buffer if successfully
+ * @retval  NULL if failed
+ */
+GPUJPEG_API uint8_t* gpujpeg_encoder_get_inner_device_image_data(struct gpujpeg_encoder* encoder);
+
+/**
  * Create JPEG encoder
  * 
  * @param param  Parameters for coder

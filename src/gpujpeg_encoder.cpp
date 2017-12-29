@@ -65,6 +65,11 @@ int gpujpeg_encoder_input_copy_image(struct gpujpeg_encoder_input* input, struct
         return -1;
 }
 
+uint8_t* gpujpeg_encoder_get_inner_device_image_data(struct gpujpeg_encoder* encoder) {
+    struct gpujpeg_coder *coder = &encoder->coder;
+    return coder->d_data_raw;
+}
+
 /** Documented at declaration */
 struct gpujpeg_encoder*
 gpujpeg_encoder_create(struct gpujpeg_parameters* param, struct gpujpeg_image_parameters* param_image)
