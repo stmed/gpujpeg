@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpujpeg", "gpujpeg\gpujpeg.vcxproj", "{B1245F60-76EE-4CDC-A52A-962DFA77A136}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpujpeg", "gpujpeg.vcxproj", "{B1245F60-76EE-4CDC-A52A-962DFA77A136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
