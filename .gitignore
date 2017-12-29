@@ -34,6 +34,8 @@ test-driver
 *.sdf
 *.suo
 *.user
+*.ipch
+*.opensdf
 Debug
 Release
 

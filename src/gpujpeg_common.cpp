@@ -38,10 +38,18 @@
 #include "gpujpeg_preprocessor.h"
 #include <math.h>
 #ifdef GPUJPEG_USE_OPENGL
-    #define GL_GLEXT_PROTOTYPES
-    #include <GL/gl.h>
-    #include <GL/glx.h>
-    #include <cuda_gl_interop.h>
+//Change for WINDOWS
+#ifdef WIN32 
+#define GL_GLEXT_PROTOTYPES
+#include "GL/glew.h"
+#include <cuda_gl_interop.h>
+#else
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glx.h>
+#include <cuda_gl_interop.h>
+#endif
+    
 #endif
 
 // rounds number of segment bytes up to next multiple of 128
@@ -889,6 +897,7 @@ int
 gpujpeg_opengl_init()
 {
 #ifdef GPUJPEG_USE_OPENGL
+#ifndef WIN32
     // Open display
     Display* glx_display = XOpenDisplay(0);
     if ( glx_display == NULL ) {
@@ -935,6 +944,7 @@ gpujpeg_opengl_init()
     //XMapWindow(glx_display, glx_window);
 
     glXMakeCurrent(glx_display, glx_window, glx_context);
+#endif
 #else
     GPUJPEG_EXIT_MISSING_OPENGL();
 #endif
