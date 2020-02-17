@@ -576,7 +576,7 @@ gpujpeg_dct_gpu(struct gpujpeg_encoder* encoder)
                 0,
                 cudaMemcpyDeviceToDevice
             );
-            cudaThreadSynchronize();
+            cudaDeviceSynchronize();
             gpujpeg_cuda_check_error("Quantization table memcpy failed", return -1);
         }
 
@@ -605,7 +605,7 @@ gpujpeg_dct_gpu(struct gpujpeg_encoder* encoder)
             component->data_width * GPUJPEG_BLOCK_SIZE,
             d_quantization_table
         );
-        cudaThreadSynchronize();
+        cudaDeviceSynchronize();
         gpujpeg_cuda_check_error("Forward DCT failed", return -1);
     }
 
@@ -667,7 +667,7 @@ gpujpeg_idct_gpu(struct gpujpeg_decoder* decoder)
             component->data_width,
             d_quantization_table
         );
-        cudaThreadSynchronize();
+        cudaDeviceSynchronize();
         gpujpeg_cuda_check_error("Inverse Integer DCT failed", return -1);
     }
 

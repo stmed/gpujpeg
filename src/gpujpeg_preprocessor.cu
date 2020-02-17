@@ -455,7 +455,7 @@ gpujpeg_preprocessor_encode(struct gpujpeg_coder* coder)
         width_div_mul,
         width_div_shift
     );
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     gpujpeg_cuda_check_error("Preprocessor encoding failed", return -1);
         
     return 0;
@@ -788,7 +788,7 @@ gpujpeg_preprocessor_decode(struct gpujpeg_coder* coder)
         image_width,
         image_height
     );
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     gpujpeg_cuda_check_error("Preprocessor encoding failed", return -1);
     
     return 0;

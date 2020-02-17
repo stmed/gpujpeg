@@ -632,13 +632,13 @@ gpujpeg_huffman_gpu_decoder_decode(struct gpujpeg_decoder* decoder)
         decoder->d_table_huffman[GPUJPEG_COMPONENT_CHROMINANCE][GPUJPEG_HUFFMAN_DC],
         decoder->d_table_huffman[GPUJPEG_COMPONENT_CHROMINANCE][GPUJPEG_HUFFMAN_AC]
     );
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     gpujpeg_cuda_check_error("Huffman decoder table setup failed", return -1);
 
     // Get pointer to quick decoding table in device memory
     void * d_src_ptr = 0;
     cudaGetSymbolAddress(&d_src_ptr, gpujpeg_huffman_gpu_decoder_tables_quick);
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     gpujpeg_cuda_check_error("Huffman decoder table address lookup failed", return -1);
     
     // Copy quick decoding table into constant memory
@@ -649,7 +649,7 @@ gpujpeg_huffman_gpu_decoder_decode(struct gpujpeg_decoder* decoder)
         0,
         cudaMemcpyDeviceToDevice
     );
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     gpujpeg_cuda_check_error("Huffman decoder table copy failed", return -1);
     
     // Run decoding kernel
@@ -676,7 +676,7 @@ gpujpeg_huffman_gpu_decoder_decode(struct gpujpeg_decoder* decoder)
             coder->d_data_quantized
         );
     }
-    cudaError cuerr = cudaThreadSynchronize();
+    cudaError cuerr = cudaDeviceSynchronize();
     gpujpeg_cuda_check_error("Huffman decoding failed", return -1);
     
     return 0;

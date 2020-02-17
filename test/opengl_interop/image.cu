@@ -87,7 +87,7 @@ image_render(struct image* image, int max)
     dim3 block(8, 8);
     dim3 grid(image->width / block.x + 1, image->height / block.y + 1);
     image_render_kernel<<<grid, block>>>(image->d_data, image->width, image->height, max);
-    cudaError cuerr = cudaThreadSynchronize();
+    cudaError cuerr = cudaDeviceSynchronize();
     if ( cuerr != cudaSuccess ) {
         fprintf(stderr, "Kernel failed: %s!\n", cudaGetErrorString(cuerr));
         return;

@@ -37,7 +37,7 @@ int main()
     cuda_check_error("Init failed");
 
     get_value<<<1, 1>>>(d_index, d_value);
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     cuda_check_error("Kernel failed");
 
     cudaMemcpy(&index, d_index,  sizeof(int), cudaMemcpyDeviceToHost);

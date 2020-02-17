@@ -184,8 +184,8 @@ gpujpeg_huffman_gpu_encoder_encode_block(const int16_t * block, unsigned int * &
     
     // compute preceding zero count for even coefficient (actually compute the count multiplied by 16)
     const unsigned int nonzero_mask = (1 << tid) - 1;
-    const unsigned int nonzero_bitmap_0 = 1 | __ballot(in_even);  // DC is always treated as nonzero
-    const unsigned int nonzero_bitmap_1 = __ballot(in_odd);
+    const unsigned int nonzero_bitmap_0 = 1 | __ballot_sync(0xFFFFFFFF, in_even);  // DC is always treated as nonzero
+    const unsigned int nonzero_bitmap_1 = __ballot_sync(0xFFFFFFFF, in_odd);
     const unsigned int nonzero_bitmap_pairs = nonzero_bitmap_0 | nonzero_bitmap_1;
     
     const int zero_pair_count = __clz(nonzero_bitmap_pairs & nonzero_mask);
@@ -243,8 +243,8 @@ gpujpeg_huffman_gpu_encoder_encode_block(const int16_t * block, unsigned int * &
     }
     
     // each thread get number of preceding nonzero codewords and total number of nonzero codewords in this block
-    const unsigned int even_codeword_presence = __ballot(even_code);
-    const unsigned int odd_codeword_presence = __ballot(odd_code);
+    const unsigned int even_codeword_presence = __ballot_sync(0xFFFFFFFF, even_code);
+    const unsigned int odd_codeword_presence = __ballot_sync(0xFFFFFFFF, odd_code);
     const int codeword_offset = __popc(nonzero_mask & even_codeword_presence)
                               + __popc(nonzero_mask & odd_codeword_presence);
     
@@ -959,7 +959,7 @@ gpujpeg_huffman_gpu_encoder_init(const struct gpujpeg_encoder * encoder)
     // Initialize decomposition lookup table
     cudaFuncSetCacheConfig(gpujpeg_huffman_gpu_encoder_value_decomposition_init_kernel, cudaFuncCachePreferShared);
     gpujpeg_huffman_gpu_encoder_value_decomposition_init_kernel<<<32, 256>>>();  // 8192 threads total
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     gpujpeg_cuda_check_error("Decomposition LUT initialization failed", return -1);
     
     // compose GPU version of the huffman LUT and copy it into GPU memory (for CC >= 2.0)
@@ -1051,7 +1051,7 @@ gpujpeg_huffman_gpu_encoder_encode(struct gpujpeg_encoder* encoder, unsigned int
             coder->segment_count, 
             coder->d_temp_huffman
         );
-        cudaThreadSynchronize();
+        cudaDeviceSynchronize();
         gpujpeg_cuda_check_error("Huffman encoding failed", return -1);
     } else {
         // Run encoder kernel
@@ -1078,7 +1078,7 @@ gpujpeg_huffman_gpu_encoder_encode(struct gpujpeg_encoder* encoder, unsigned int
                 comp_count
             );
         }
-        cudaThreadSynchronize();
+        cudaDeviceSynchronize();
         gpujpeg_cuda_check_error("Huffman encoding failed", return -1);
         
         // Run codeword serialization kernel
@@ -1090,14 +1090,14 @@ gpujpeg_huffman_gpu_encoder_encode(struct gpujpeg_encoder* encoder, unsigned int
             coder->d_data_compressed,
             coder->d_temp_huffman
         );
-        cudaThreadSynchronize();
+        cudaDeviceSynchronize();
         gpujpeg_cuda_check_error("Codeword serialization failed", return -1);
     }
     
     // No atomic operations in CC 1.0 => run output size computation kernel to allocate the output buffer space
     if ( encoder->coder.cuda_cc_major == 1 && encoder->coder.cuda_cc_minor == 0 ) {
         gpujpeg_huffman_encoder_allocation_kernel<<<1, 512>>>(coder->d_segment, coder->segment_count);
-        cudaThreadSynchronize();
+        cudaDeviceSynchronize();
         gpujpeg_cuda_check_error("Huffman encoder output allocation failed", return -1);
     }
     
@@ -1110,7 +1110,7 @@ gpujpeg_huffman_gpu_encoder_encode(struct gpujpeg_encoder* encoder, unsigned int
         coder->d_temp_huffman,
         coder->d_data_compressed
     );
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     gpujpeg_cuda_check_error("Huffman output compaction failed", return -1);
     
     // Read and return number of occupied bytes
