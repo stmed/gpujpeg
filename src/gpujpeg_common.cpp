@@ -514,6 +514,7 @@ gpujpeg_coder_init(struct gpujpeg_coder* coder)
         assert(coder->data_size == data_index);
             
         // Set compressed size
+        coder->data_size *= 2;
         coder->data_compressed_size = data_compressed_index;
     }
     //printf("Compressed size %d (segments %d)\n", coder->data_compressed_size, coder->segment_count);
